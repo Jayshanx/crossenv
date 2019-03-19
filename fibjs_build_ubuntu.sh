@@ -6,7 +6,8 @@
 # read more about How To Cross-compilation using Clang at https://llvm.org/docs/HowToCrossCompileLLVM.html
 # and http://clang.llvm.org/docs/CrossCompilation.html
 
-
+#if [ $1 == 1 ]; then ANSWER=1; else ANSWER=0; fi
+ANSWER=1
 OS_VER=$( grep VERSION_ID /etc/os-release | cut -d'=' -f2 | sed 's/[^0-9\.]//gI' )
 OS_MAJ=$(echo "${OS_VER}" | cut -d'.' -f1)
 OS_MIN=$(echo "${OS_VER}" | cut -d'.' -f2)
@@ -55,12 +56,11 @@ fi
 
 # defalut clang version on ubuntu 16.04 is 3.8 installing by apt 
 # clang is necessary for building on ubuntu
-DEP_ARRAY=(
-	curl wget make cmake git llvm-6.0 clang-6.0 clang++-6.0 lld-6.0 build-essential
-	#git llvm-4.0 clang-4.0 libclang-4.0-dev make cmake  build-essential curl
-)
-ARM_DOWLOAD_URL = http://releases.linaro.org/components/toolchain/binaries/5.5-2017.10/arm-linux-gnueabihf/gcc-linaro-5.5.0-2017.10-x86_64_arm-linux-gnueabihf.tar.xz
-ARM64_DOWLOAD_URL = http://releases.linaro.org/components/toolchain/binaries/5.5-2017.10/aarch64-linux-gnu/gcc-linaro-5.5.0-2017.10-x86_64_aarch64-linux-gnu.tar.xz
+DEP_ARRAY=(wget make cmake git llvm-6.0 clang-6.0 clang++-6.0 lld-6.0 build-essential)
+#git llvm-4.0 clang-4.0 libclang-4.0-dev make cmake  build-essential curl
+
+ARM_DOWLOAD_URL="http://releases.linaro.org/components/toolchain/binaries/5.5-2017.10/arm-linux-gnueabihf/gcc-linaro-5.5.0-2017.10-x86_64_arm-linux-gnueabihf.tar.xz"
+ARM64_DOWLOAD_URL="http://releases.linaro.org/components/toolchain/binaries/5.5-2017.10/aarch64-linux-gnu/gcc-linaro-5.5.0-2017.10-x86_64_aarch64-linux-gnu.tar.xz"
 
 # 以下交叉编译工具可以 apt 方式安装
 # 暂时不安装
@@ -77,20 +77,55 @@ COUNT=1
 DISPLAY=""
 DEP=""
 
+
+
 # add source 
-curl -o - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add - && \
-apt-add-repository "deb http://apt.llvm.org/xenial/llvm-toolchain-xenial-6.0 main" && \
-apt-add-repository 'deb http://us.archive.ubuntu.com/ubuntu/ xenial main restricted universe multiverse' && \
-apt-add-repository 'deb http://us.archive.ubuntu.com/ubuntu/ xenial-updates main restricted universe multiverse' && \
-apt-add-repository 'deb http://us.archive.ubuntu.com/ubuntu/ xenial-backports main restricted universe multiverse' && \
-apt-add-repository 'deb http://security.ubuntu.com/ubuntu xenial-security main restricted universe multiverse'
+
+#echo  "deb http://apt.llvm.org/xenial/llvm-toolchain-xenial-6.0 main" >> 
+
+# apt-add-repository 'deb http://us.archive.ubuntu.com/ubuntu/ xenial main restricted universe multiverse' && \
+# apt-add-repository 'deb http://us.archive.ubuntu.com/ubuntu/ xenial-updates main restricted universe multiverse' && \
+# apt-add-repository 'deb http://us.archive.ubuntu.com/ubuntu/ xenial-backports main restricted universe multiverse' && \
+# apt-add-repository 'deb http://security.ubuntu.com/ubuntu xenial-security main restricted universe multiverse'
+
+wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add - 
+apt-get update
+apt-add-repository "deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-6.0 main"
+
+# aliyun 
+# if [ $ANSWER != 1 ]; then read -p "if you want to use aliyun sources? (y/n) " ANSWER; fi
+# case $ANSWER in
+# 	1 | [Yy]* )
+# 		echo  "#deb cdrom:[Ubuntu 16.04 LTS _Xenial Xerus_ - Release amd64 (20160420.1)]/ xenial main restricted
+# 				deb-src http://archive.ubuntu.com/ubuntu xenial main restricted #Added by software-properties
+# 				deb http://mirrors.aliyun.com/ubuntu/ xenial main restricted
+# 				deb-src http://mirrors.aliyun.com/ubuntu/ xenial main restricted multiverse universe #Added by software-properties
+# 				deb http://mirrors.aliyun.com/ubuntu/ xenial-updates main restricted
+# 				deb-src http://mirrors.aliyun.com/ubuntu/ xenial-updates main restricted multiverse universe #Added by software-properties
+# 				deb http://mirrors.aliyun.com/ubuntu/ xenial universe
+# 				deb http://mirrors.aliyun.com/ubuntu/ xenial-updates universe
+# 				deb http://mirrors.aliyun.com/ubuntu/ xenial multiverse
+# 				deb http://mirrors.aliyun.com/ubuntu/ xenial-updates multiverse
+# 				deb http://mirrors.aliyun.com/ubuntu/ xenial-backports main restricted universe multiverse
+# 				deb-src http://mirrors.aliyun.com/ubuntu/ xenial-backports main restricted universe multiverse #Added by software-properties
+# 				deb http://archive.canonical.com/ubuntu xenial partner
+# 				deb-src http://archive.canonical.com/ubuntu xenial partner
+# 				deb http://mirrors.aliyun.com/ubuntu/ xenial-security main restricted
+# 				deb-src http://mirrors.aliyun.com/ubuntu/ xenial-security main restricted multiverse universe #Added by software-properties
+# 				deb http://mirrors.aliyun.com/ubuntu/ xenial-security universe
+# 				deb http://mirrors.aliyun.com/ubuntu/ xenial-security multiverse" > /etc/apt/sources.list;;
+# 	[Nn]* ) echo "use default soueces!";;
+# 	* ) echo "Please type 'y' for yes or 'n' for no."; exit;;
+# esac
+
+
 
 
 if [ $ANSWER != 1 ]; then read -p "Do you wish to update repositories with apt-get update? (y/n) " ANSWER; fi
 case $ANSWER in
 	1 | [Yy]* )
-#		if ! apt-get update; then
-		if ! true; then
+		if ! apt-get update; then
+#		if ! true; then
 			printf " - APT update failed.\\n"
 			exit 1;
 		else
@@ -101,6 +136,7 @@ case $ANSWER in
 	* ) echo "Please type 'y' for yes or 'n' for no."; exit;;
 esac
 
+# install essential packages
 printf "\\nChecking for installed dependencies...\\n"
 for (( i=0; i<${#DEP_ARRAY[@]}; i++ )); do
 	pkg=$( dpkg -s "${DEP_ARRAY[$i]}" 2>/dev/null | grep Status | tr -s ' ' | cut -d\  -f4 )
@@ -115,9 +151,6 @@ for (( i=0; i<${#DEP_ARRAY[@]}; i++ )); do
 	fi
 done
 
-update-alternatives --install /usr/bin/clang clang /usr/bin/clang-6.0 999
-update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-6.0 999
-
 
 if [ "${COUNT}" -gt 1 ]; then
 	printf "\\nThe following dependencies are required to install fibjs:\\n"
@@ -125,8 +158,8 @@ if [ "${COUNT}" -gt 1 ]; then
 	if [ $ANSWER != 1 ]; then read -p "Do you wish to install these packages? (y/n) " ANSWER; fi
 	case $ANSWER in
 		1 | [Yy]* )
-			# if ! sudo apt-get -y install ${DEP}; then
-			if ! true; then
+			if ! apt-get -y install ${DEP}; then
+#			if ! true; then
 				printf " - APT dependency failed.\\n"
 				exit 1
 			else
@@ -139,71 +172,67 @@ if [ "${COUNT}" -gt 1 ]; then
 else 
 	printf " - No required APT dependencies to install."
 fi
+update-alternatives --install /usr/bin/clang clang /usr/bin/clang-6.0 999
+update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-6.0 999
 
 
 printf "\\n"
 
 
-# or install by apt
-# ubuntu 16.04 install cmake 3.5.1 default 
-# printf "Checking CMAKE installation...\\n"
-# if [ ! -e $CMAKE ]; then
-# 	printf "Installing CMAKE...\\n"
-# 	curl -LO https://cmake.org/files/v$CMAKE_VERSION_MAJOR.$CMAKE_VERSION_MINOR/cmake-$CMAKE_VERSION.tar.gz \
-# 	&& tar -xzf cmake-$CMAKE_VERSION.tar.gz \
-# 	&& cd cmake-$CMAKE_VERSION \
-# 	&& ./bootstrap --prefix=$HOME \
-# 	&& make -j"${JOBS}" \
-# 	&& make install \
-# 	&& cd .. \
-# 	&& rm -f cmake-$CMAKE_VERSION.tar.gz \
-# 	|| exit 1
-# 	printf " - CMAKE successfully installed @ ${CMAKE} \\n"
-# else
-# 	printf " - CMAKE found @ ${CMAKE}.\\n"
-# fi
-# if [ $? -ne 0 ]; then exit -1; fi
-
-
+# install toolchains
 printf "\\nThe following are toolchain packages if you are trying to crossing-compile:\\n"
-printf "${CROSS_DEP}\\n\\n" 
+for v in ${CROSS_DEP[@]}; do
+	printf " - $v \n"
+done
+
+
+printf "${CROSS_DEP}\n\n"
 if [ $ANSWER != 1 ]; then read -p "Do you wish to install these packages? (y/n) " ANSWER; fi
-	case $ANSWER in
-		1 | [Yy]* )
-			for(( i=0; i<${#CROSS_DEP[@]}; i++ ));do
-				if ! apt-ge tisntall -y CROSS_DEP[$i] ; then
-					printf " - APT dependency failed.\\n"
-					exit 1
-				else
-					printf " - APT dependencies installed successfully.\\n"
-				fi
-			done
-		[Nn]* ) echo "User aborting installation of required dependencies, Exiting now."; exit;;
-		* ) echo "Please type 'y' for yes or 'n' for no."; exit;;
-	esac
-else
-		printf "\e[31m - No required APT dependencies to install."
-fi
+case $ANSWER in
+	1 | [Yy]* )
+		for v in ${CROSS_DEP[@]};do
+			if ! apt-get install -y $v; then
+				printf " - APT dependency failed.\\n"
+				exit 1
+			else
+				update-alternatives --install /usr/bin/${v:6}-gcc ${v:6}-gcc /usr/bin/${v:6}-gcc-5 999
+				update-alternatives --install /usr/bin/${v:6}-g++ ${v:6}-g++ /usr/bin/${v:6}-g++-5 999
+				printf " - APT dependencies installed successfully.\\n"
+			fi
+		done;;
+	[Nn]* ) echo "User aborting installation of required dependencies, Exiting now."; exit;;
+	* ) echo "Please type 'y' for yes or 'n' for no."; exit;;
+esac
+
 
 # install cross compile toolchains
-
 printf " download and isntall gcc-arm-linux-gnueabihf and aarch64-linux-gnu \n\n"
 
-if [ -d /usr ]
-	cd /usr	\
- 	&& wget -P /usr -O arm-linux-gnueabihf.tar.xz  ${ARM_DOWLOAD_URL}  \
-	&& tar -Jvxf arm-linux-gnueabihf.tar.xz 
-	&& mv gcc-linaro-5.5.0-2017.10-x86_64_arm-linux-gnueabihf arm-linux-gnueabihf \
-	&& ln -s /usr/arm-linux-gnueabihf/lib/gcc/arm-linux-gnueabihf/5.5.0/crtbegin.o /usr/arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/lib/crtbegin.o \
-	&& ln -s /usr/arm-linux-gnueabihf/lib/gcc/arm-linux-gnueabihf/5.5.0/crtend.o /usr/arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/lib/crtend.o \
- 	&& rm ./arm-linux-gnueabihf.tar.xz \
-	&& wget -P /usr -O aarch64-linux-gnu.tar.xz ${ARM64_DOWLOAD_URL} \
-	&& tar -Jvxf aarch64-linux-gnu.tar.xz  
-	&& mv gcc-linaro-5.5.0-2017.10-x86_64_aarch64-linux-gnu aarch64-linux-gnu \
-	&& ln -s /usr/aarch64-linux-gnu/lib/gcc/aarch64-linux-gnu/5.5.0/crtbegin.o /usr/aarch64-linux-gnu/aarch64-linux-gnu/libc/usr/lib/crtbegin.o \
-	&& ln -s /usr/aarch64-linux-gnu/lib/gcc/aarch64-linux-gnu/5.5.0/crtend.o /usr/aarch64-linux-gnu/aarch64-linux-gnu/libc/usr/lib/crtend.o \
-	&& rm ./aarch64-linux-gnu.tar.xz \
-	&& cat "PATH=${PATH}:/usr/arm-linux-gnueabihf/bin:/usr/aarch64-linux-gnu/bin" >> ~/.bashrc \
-	&& source ~/.bashrc 
+# install cross compile toolchains
+printf " download and isntall gcc-arm-linux-gnueabihf and aarch64-linux-gnu \n\n"
 
+printf "\\nThe following oprations are installing toolchain by binaries if you are trying to crossing-compile:\\n"
+if [ $ANSWER != 1 ]; then read -p "Do you wish to install  packages by binary? (y/n) " ANSWER; fi
+case $ANSWER in
+	1 | [Yy]* )	
+	 	#wget -P /usr -O arm-linux-gnueabihf.tar.xz  ${ARM_DOWLOAD_URL} && \
+	 	mv gcc-linaro-5.4.1-2017.01-x86_64_arm-linux-gnueabihf.tar.xz gcc-linaro-5.5.0-2017.10-x86_64_aarch64-linux-gnu.tar.xz  /usr && \
+	 	cd /usr && \
+		tar -Jvxf gcc-linaro-5.4.1-2017.01-x86_64_arm-linux-gnueabihf.tar.xz && \
+		mv gcc-linaro-5.4.1-2017.01-x86_64_arm-linux-gnueabihf arm-linux-gnueabihf && \
+		ln -s /usr/arm-linux-gnueabihf/lib/gcc/arm-linux-gnueabihf/5.4.1/crtbegin.o /usr/arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/lib/crtbegin.o && \
+		ln -s /usr/arm-linux-gnueabihf/lib/gcc/arm-linux-gnueabihf/5.4.1/crtend.o /usr/arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/lib/crtend.o && \
+	 	rm ./gcc-linaro-5.4.1-2017.01-x86_64_arm-linux-gnueabihf.tar.xz && \
+		#wget -P /usr -O aarch64-linux-gnu.tar.xz ${ARM64_DOWLOAD_URL} && \
+		tar -Jvxf gcc-linaro-5.5.0-2017.10-x86_64_aarch64-linux-gnu.tar.xz  && \
+		mv gcc-linaro-5.5.0-2017.10-x86_64_aarch64-linux-gnu aarch64-linux-gnu && \
+		ln -s /usr/aarch64-linux-gnu/lib/gcc/aarch64-linux-gnu/5.5.0/crtbegin.o /usr/aarch64-linux-gnu/aarch64-linux-gnu/libc/usr/lib/crtbegin.o && \
+		ln -s /usr/aarch64-linux-gnu/lib/gcc/aarch64-linux-gnu/5.5.0/crtend.o /usr/aarch64-linux-gnu/aarch64-linux-gnu/libc/usr/lib/crtend.o && \
+		rm gcc-linaro-5.4.1-2017.01-x86_64_arm-linux-gnueabihf.tar.xz gcc-linaro-5.5.0-2017.10-x86_64_aarch64-linux-gnu.tar.xz  && \
+		echo "PATH=${PATH}:/usr/arm-linux-gnueabihf/bin:/usr/aarch64-linux-gnu/bin" >> ~/.bashrc  && \
+		source ~/.bashrc ;;
+	[Nn]* ) echo "User aborting installation of required dependencies, Exiting now."; exit;;
+	* ) echo "Please type 'y' for yes or 'n' for no."; exit;;
+esac
 
+rm /build/gcc-linaro-5.4.1-2017.01-x86_64_arm-linux-gnueabihf.tar.xz gcc-linaro-5.4.1-2017.01-x86_64_arm-linux-gnueabihf arm-linux-gnueabihf
