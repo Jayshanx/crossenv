@@ -1,7 +1,7 @@
 FROM ubuntu:xenial
 
 
-COPY sources.list fibjs_build_ubuntu.sh  gcc-linaro-5.4.1-2017.01-x86_64_arm-linux-gnueabihf.tar.xz gcc-linaro-5.5.0-2017.10-x86_64_aarch64-linux-gnu.tar.xz /build/
+COPY sources.list fibjs_build_ubuntu.sh /build/
 
 
 RUN cd /build && mv sources.list /etc/apt/ &&  apt-get update && apt-get install wget software-properties-common -y && ./fibjs_build_ubuntu.sh
