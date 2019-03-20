@@ -1,5 +1,0 @@
-FROM ubuntu:xenial
-
-COPY sources.list fibjs_build_ubuntu.sh /build/
-
-RUN cd /build && mv sources.list /etc/apt/ &&  apt-get update && apt-get install wget software-properties-common -y && ./fibjs_build_ubuntu.sh

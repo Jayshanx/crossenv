@@ -16,24 +16,23 @@ usage()
 	echo "  -h, --help:"
 	echo "      Print this message and exit."
 	echo ""
-	echo "this script only have one option"
+	echo "this script should one or zero option"
 	exit 0
 }
+
 ANSWER=0
 if [ $# -eq 1 ]; then 
 	case $1 in
 		--yes | -y)
 			ANSWER=1
-				;;
 			printf "all packages will install Automatic"
+			;;
 		--help | -h) usage
 			;;
 		*) echo "illegal option $i"
 			usage
 			;;
 	esac
-else
-	usage
 fi
 
 #ANSWER='-y'
@@ -62,11 +61,11 @@ printf "Disk install: ${DISK_INSTALL}\\n"
 printf "Disk space total: ${DISK_TOTAL%.*}G\\n"
 printf "Disk space available: ${DISK_AVAIL%.*}G\\n"
 
-if [ "${MEM_MEG}" -lt 3000 ]; then
-	printf "Your system must have 3 or more Gigabytes of physical memory installed.\\n"
-	printf "Exiting now.\\n"
-	exit 1
-fi
+# if [ "${MEM_MEG}" -lt 3000 ]; then
+# 	printf "Your system must have 3 or more Gigabytes of physical memory installed.\\n"
+# 	printf "Exiting now.\\n"
+# 	exit 1
+# fi
 
 if [ "${OS_MAJ}" -lt 16 ]; then
 	printf "You must be running Ubuntu 16.04.x or higher to install fibjs.\\n"
@@ -85,8 +84,11 @@ DEP=""
 # llvm source
 wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add - 
 apt-get update
-apt-add-repository "deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-6.0 main"
-
+if [ "${OS_MAJ}" -eq 16 ]; then
+	apt-add-repository "deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-6.0 main"
+else
+	apt-add-repository "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-6.0 main"
+fi
 
 if [ $ANSWER != 1 ]; then read -p "Do you wish to update repositories with apt-get update? (y/n) " ANSWER; fi
 case $ANSWER in
@@ -169,4 +171,7 @@ for v in ${CROSS_DEP[@]};do
 	update-alternatives --install /usr/bin/${v:6}-gcc ${v:6}-gcc /usr/bin/${v:6}-gcc-5 999
 	update-alternatives --install /usr/bin/${v:6}-g++ ${v:6}-g++ /usr/bin/${v:6}-g++-5 999
 done
+
+apt-get clean
+rm -rf /var/lib/apt/lists/*  /usr/share/doc /usr/share/man
 printf "\\n the fibjs enviroment has been successfully setting\\n"
