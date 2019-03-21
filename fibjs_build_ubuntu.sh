@@ -171,6 +171,12 @@ for v in ${CROSS_DEP[@]}; do
 	update-alternatives --install /usr/bin/${v:6}-g++ ${v:6}-g++ /usr/bin/${v:6}-g++-5 999
 done
 
+printf " setting i386 enviroment \\n"
+ln -s x86_64-linux-gnu /usr/include/i386-linux-gnu
+ln -s x86_64-linux-gnu /usr/include/x86_64-linux-gnux32
+
+
+print "clean \\n"
 apt-get clean && \
 rm -rf /var/lib/apt/lists/* && \
 rm -rf /usr/share/doc && \
