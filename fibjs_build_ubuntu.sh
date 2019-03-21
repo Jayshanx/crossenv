@@ -72,7 +72,7 @@ if [ "${OS_MAJ}" -lt 16 ]; then
 	exit 1
 fi
 
-DEP_ARRAY=(make cmake git clang-6.0 g++-multilib)
+DEP_ARRAY=(make cmake git clang-6.0 g++-multilib,xz-utils)
 
 CROSS_DEP=(g++-5-mips-linux-gnu g++-5-mips64-linux-gnuabi64 g++-5-powerpc-linux-gnu g++-5-powerpc64-linux-gnu g++-5-arm-linux-gnueabihf g++-5-aarch64-linux-gnu)
 
