@@ -1,46 +1,4 @@
-FROM ubuntu:bionic
-MAINTAINER Jayshanx <https://github.com/Jayshanx>
+FROM zhixiangxiao/build-env:xenial
 
-#copy 
-ADD gcc-linaro-5.4.1-2017.05-x86_64_arm-linux-gnueabihf.tar.xz /
 
-# Pre-Req Repos
-RUN apt-get update && apt-get install software-properties-common -y && apt-get install wget &&\
-   apt-add-repository "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-6.0 main" \
-   add-apt-repository 'deb http://us.archive.ubuntu.com/ubuntu/ bionic main restricted universe multiverse' && \
-   add-apt-repository 'deb http://us.archive.ubuntu.com/ubuntu/ bionic-updates main restricted universe multiverse' && \
-   add-apt-repository 'deb http://us.archive.ubuntu.com/ubuntu/ bionic-backports main restricted universe multiverse' && \
-   add-apt-repository 'deb http://security.ubuntu.com/ubuntu bionic-security main restricted universe multiverse' \
-   && apt-get update \
-   && wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add - \
-   && apt-get install curl g++ make cmake git g++-multilib install llvm build-essential clang-6.0 lld-6.0 -y \
-   #aarch64-linux-gnu
-   && apt-get install g++-5-aarch64-linux-gnu -y \
-   && rm -f /usr/bin/aarch64-linux-gnu-gcc \
-   && rm -f /usr/bin/aarch64-linux-gnu-g++ \
-   && ln -s aarch64-linux-gnu-gcc-5 /usr/bin/aarch64-linux-gnu-gcc \
-   && ln -s aarch64-linux-gnu-g++-5 /usr/bin/aarch64-linux-gnu-g++ \
-   #mips-linux-gnu
-   && apt-get install g++-5-mips-linux-gnu -y \
-   && rm -f /usr/bin/mips-linux-gnu-gcc \
-   && rm -f /usr/bin/mips-linux-gnu-g++ \
-   && ln -s mips-linux-gnu-gcc-5 /usr/bin/mips-linux-gnu-gcc \
-   && ln -s mips-linux-gnu-g++-5 /usr/bin/mips-linux-gnu-g++ \
-   #mips64-linux-gnuabi64
-   && apt-get install g++-5-mips64-linux-gnuabi64 -y \
-   && rm -f /usr/bin/mips64-linux-gnuabi64-gcc \
-   && rm -f /usr/bin/mips64-linux-gnuabi64-g++ \
-   && ln -s mips64-linux-gnuabi64-gcc-5 /usr/bin/mips64-linux-gnuabi64-gcc \
-   && ln -s mips64-linux-gnuabi64-g++-5 /usr/bin/mips64-linux-gnuabi64-g++ \
-   #install arm-linux-gnueabihf toolchian  by binary
-   && mkdir -p /usr/arm-linux-gnueabihf \
-   && cp gcc-linaro-5.4.1-2017.05-x86_64_arm-linux-gnueabihf.tar.xz /usr \
-   #&& wget -P /usr -O arm-linux-gnueabihf http://releases.linaro.org/components/toolchain/binaries/5.4-2017.05/arm-linux-gnueabihf/gcc-linaro-5.4.1-2017.05-x86_64_arm-linux-gnueabihf.tar.xz \
-   && tar -Jvxf /usr/arm-linux-gnueabihf \
-   && rm /usr/arm-linux-gnueabihf \
-   # && cp ./lib/gcc/arm-linux-gnueabihf/5.4.1/crtbegin.o ./arm-linux-gnueabihf/libc/usr/lib/ \
-   # && cp ./lib/gcc/arm-linux-gnueabihf/5.4.1/crtend.o ./arm-linux-gnueabihf/libc/usr/lib/ \
-   && ln -s /usr/arm-linux-gnueabihf/lib/gcc/arm-linux-gnueabihf/5.4.1/crtbegin.o /usr/arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/lib/crtbegin.o \
-   && ln -s /usr/arm-linux-gnueabihf/lib/gcc/arm-linux-gnueabihf/5.4.1/crtend.o /usr/arm-linux-gnueabihf/arm-linux-gnueabihf/libc/usr/lib/crtend.o \
-   && cat "PATH=${PATH}:/usr/arm-linux-gnueabihf/bin" >> ~/.bashrc \
-   && source ~/.bashrc 
+RUN  dpkg --add-architecture i386 && apt-get update && apt-get -y dist-upgrade && apt-get -y install libglib2.0-0:i386

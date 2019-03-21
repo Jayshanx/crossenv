@@ -181,3 +181,9 @@ rm -rf /var/lib/apt/lists/* && \
 rm -rf /usr/share/doc && \
 rm -rf /usr/share/man
 printf " \\n the fibjs enviroment has been successfully setting \\n "
+
+
+
+
+
+sudo docker run -v /home/xiao/fibjs:/home/ci 32build:xenial /bin/sh -c "cd /home/ci && sh build release i386"

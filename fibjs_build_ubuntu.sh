@@ -72,7 +72,7 @@ if [ "${OS_MAJ}" -lt 16 ]; then
 	exit 1
 fi
 
-DEP_ARRAY=(make cmake git clang-6.0)
+DEP_ARRAY=(make cmake git clang-6.0 g++-multilib)
 
 CROSS_DEP=(g++-5-mips-linux-gnu g++-5-mips64-linux-gnuabi64 g++-5-powerpc-linux-gnu g++-5-powerpc64-linux-gnu g++-5-arm-linux-gnueabihf g++-5-aarch64-linux-gnu)
 
@@ -124,7 +124,7 @@ if [ "${COUNT}" -gt 1 ]; then
 	if [ $ANSWER != 1 ]; then read -p "Do you wish to install these packages? (y/n) " ANSWER; fi
 	case $ANSWER in
 		1 | [Yy]* )
-			if ! apt-get -y --no-install-recommends install  ${DEP}; then
+			if ! apt-get -y --no-install-recommends install ${DEP}; then
 				printf " - APT dependency failed.\\n"
 				exit 1
 			else
