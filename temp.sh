@@ -186,4 +186,4 @@ printf " \\n the fibjs enviroment has been successfully setting \\n "
 
 
 
-sudo docker run -v /home/xiao/fibjs:/home/ci 32build:xenial /bin/sh -c "cd /home/ci && sh build release i386"
+sudo docker run -v /home/xiao/fibjs:/home/ci zhixiangxiao/build-env:xenial /bin/sh -c "cd /home/ci && sh build release i386"

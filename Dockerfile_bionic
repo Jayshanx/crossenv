@@ -6,7 +6,7 @@ RUN apt-get update && apt-get -y install gnupg2 && \
 	apt-key add llvm-snapshot.gpg.key && \
     echo "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-6.0 main" >> /etc/apt/sources.list && \
     apt-get update && \
-    apt-get -y --no-install-recommends install make cmake git clang-6.0 g++-5-mips-linux-gnu \
+    apt-get -y --no-install-recommends install make cmake g++-multilib xz-utils git clang-6.0 g++-5-mips-linux-gnu \
      g++-5-mips64-linux-gnuabi64 g++-5-powerpc-linux-gnu g++-5-powerpc64-linux-gnu g++-5-arm-linux-gnueabihf g++-5-aarch64-linux-gnu && \
     update-alternatives --install /usr/bin/clang clang /usr/bin/clang-6.0 999 && \
     update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-6.0 999 && \
