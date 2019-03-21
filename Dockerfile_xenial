@@ -1,13 +1,7 @@
 FROM ubuntu:xenial
 
-COPY sources_xenial.list /
-
-RUN mv /sources_xenial.list /etc/apt/sources.list && apt-get update && apt-get -y install wget && \
-    wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key |  apt-key add - && \
-    echo "deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-6.0 main" >> /etc/apt/sources.list && \
-    apt-get update && \
+RUN apt-get update && \
     apt-get -y --no-install-recommends --fix-missing install make cmake xz-utils git clang-6.0 g++-5-mips-linux-gnu g++-5-mips64-linux-gnuabi64 g++-5-powerpc-linux-gnu g++-5-powerpc64-linux-gnu g++-5-arm-linux-gnueabihf g++-5-aarch64-linux-gnu && \
-    apt-get -y install g++-multilib && \
     update-alternatives --install /usr/bin/clang clang /usr/bin/clang-6.0 999 && \
     update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-6.0 999 && \
     update-alternatives --install /usr/bin/mips-linux-gnu-gcc mips-linux-gnu-gcc /usr/bin/mips-linux-gnu-gcc-5 999 && \
@@ -20,6 +14,7 @@ RUN mv /sources_xenial.list /etc/apt/sources.list && apt-get update && apt-get -
 	update-alternatives --install /usr/bin/aarch64-linux-gnu-g++ aarch64-linux-gnu-g++ /usr/bin/aarch64-linux-gnu-g++-5 999 && \
 	ln -s x86_64-linux-gnu /usr/include/i386-linux-gnu && \
 	ln -s x86_64-linux-gnu /usr/include/x86_64-linux-gnux32 && \
+	apt-get -y install g++-multilib && \
 	apt-get clean && \
 	rm -rf /var/lib/apt/lists/* && \
 	rm -rf /usr/share/doc && \
