@@ -1,7 +1,8 @@
 FROM ubuntu:xenial
 
+COPY sources_xenial.list /
 
-RUN apt-get update && apt-get -y install wget && \
+RUN mv /sources_xenial.list /etc/apt/sources.list && apt-get update && apt-get -y install wget && \
     wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key |  apt-key add - && \
     echo "deb http://apt.llvm.org/xenial/ llvm-toolchain-xenial-6.0 main" >> /etc/apt/sources.list && \
     apt-get update && \
