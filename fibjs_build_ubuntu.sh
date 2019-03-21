@@ -16,7 +16,8 @@ usage()
 	echo "  -h, --help:"
 	echo "      Print this message and exit."
 	echo ""
-	echo "this script should one or zero option"
+	echo "this script should have one or zero option"
+	echo ""
 	exit 0
 }
 
@@ -33,9 +34,12 @@ if [ $# -eq 1 ]; then
 			usage
 			;;
 	esac
+else 
+	if [ $# -gt 1 ]; then 
+		usage
+	fi
 fi
 
-#ANSWER='-y'
 OS_VER=$( grep VERSION_ID /etc/os-release | cut -d'=' -f2 | sed 's/[^0-9\.]//gI' )
 OS_MAJ=$(echo "${OS_VER}" | cut -d'.' -f1)
 OS_MIN=$(echo "${OS_VER}" | cut -d'.' -f2)
@@ -61,11 +65,6 @@ printf "Disk install: ${DISK_INSTALL}\\n"
 printf "Disk space total: ${DISK_TOTAL%.*}G\\n"
 printf "Disk space available: ${DISK_AVAIL%.*}G\\n"
 
-# if [ "${MEM_MEG}" -lt 3000 ]; then
-# 	printf "Your system must have 3 or more Gigabytes of physical memory installed.\\n"
-# 	printf "Exiting now.\\n"
-# 	exit 1
-# fi
 
 if [ "${OS_MAJ}" -lt 16 ]; then
 	printf "You must be running Ubuntu 16.04.x or higher to install fibjs.\\n"
@@ -73,7 +72,7 @@ if [ "${OS_MAJ}" -lt 16 ]; then
 	exit 1
 fi
 
-DEP_ARRAY=(make cmake git llvm-6.0 clang-6.0 clang++-6.0 build-essential)
+DEP_ARRAY=(make cmake git clang-6.0)
 
 CROSS_DEP=(g++-5-mips-linux-gnu g++-5-mips64-linux-gnuabi64 g++-5-powerpc-linux-gnu g++-5-powerpc64-linux-gnu g++-5-arm-linux-gnueabihf g++-5-aarch64-linux-gnu)
 
@@ -125,7 +124,7 @@ if [ "${COUNT}" -gt 1 ]; then
 	if [ $ANSWER != 1 ]; then read -p "Do you wish to install these packages? (y/n) " ANSWER; fi
 	case $ANSWER in
 		1 | [Yy]* )
-			if ! apt-get -y install ${DEP}; then
+			if ! apt-get -y --no-install-recommends install  ${DEP}; then
 				printf " - APT dependency failed.\\n"
 				exit 1
 			else
@@ -153,7 +152,7 @@ done
 if [ $ANSWER != 1 ]; then read -p "Do you wish to install these packages? (y/n) " ANSWER; fi
 case $ANSWER in
 	1 | [Yy]* )
-		if ! apt-get  -y  install ${DEP}; then
+		if ! apt-get  -y --no-install-recommends install  ${DEP}; then
 			printf " - APT dependency failed.\\n"
 			exit 1
 		else
@@ -167,11 +166,13 @@ esac
 update-alternatives --install /usr/bin/clang clang /usr/bin/clang-6.0 999
 update-alternatives --install /usr/bin/clang++ clang++ /usr/bin/clang++-6.0 999
 
-for v in ${CROSS_DEP[@]};do
+for v in ${CROSS_DEP[@]}; do
 	update-alternatives --install /usr/bin/${v:6}-gcc ${v:6}-gcc /usr/bin/${v:6}-gcc-5 999
 	update-alternatives --install /usr/bin/${v:6}-g++ ${v:6}-g++ /usr/bin/${v:6}-g++-5 999
 done
 
-apt-get clean
-rm -rf /var/lib/apt/lists/*  /usr/share/doc /usr/share/man
-printf "\\n the fibjs enviroment has been successfully setting\\n"
+apt-get clean && \
+rm -rf /var/lib/apt/lists/* && \
+rm -rf /usr/share/doc && \
+rm -rf /usr/share/man
+printf " \\n the fibjs enviroment has been successfully setting \\n "
