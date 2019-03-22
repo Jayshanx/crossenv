@@ -1,4 +1,0 @@
-FROM zhixiangxiao/build-env:xenial
-
-
-RUN  dpkg --add-architecture i386 && apt-get update && apt-get -y dist-upgrade && apt-get -y install libglib2.0-0:i386

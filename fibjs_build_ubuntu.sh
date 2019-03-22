@@ -72,7 +72,7 @@ if [ "${OS_MAJ}" -lt 16 ]; then
 	exit 1
 fi
 
-DEP_ARRAY=(make cmake git clang-6.0 g++-multilib xz-utils)
+DEP_ARRAY=(make cmake git clang-6.0 xz-utils)
 
 CROSS_DEP=(g++-5-mips-linux-gnu g++-5-mips64-linux-gnuabi64 g++-5-powerpc-linux-gnu g++-5-powerpc64-linux-gnu g++-5-arm-linux-gnueabihf g++-5-aarch64-linux-gnu)
 
@@ -170,6 +170,9 @@ for v in ${CROSS_DEP[@]}; do
 	update-alternatives --install /usr/bin/${v:6}-gcc ${v:6}-gcc /usr/bin/${v:6}-gcc-5 999
 	update-alternatives --install /usr/bin/${v:6}-g++ ${v:6}-g++ /usr/bin/${v:6}-g++-5 999
 done
+
+printf " install g++-multilib to sor"
+apt-get isntall -y g++-multilib 
 
 printf " setting i386 enviroment \\n"
 ln -s x86_64-linux-gnu /usr/include/i386-linux-gnu
